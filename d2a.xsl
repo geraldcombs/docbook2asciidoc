@@ -23,7 +23,7 @@
 <xsl:param name="add-equation-titles">false</xsl:param>
 
 <xsl:preserve-space elements="*"/>
-<xsl:strip-space elements="table row entry tgroup thead"/>
+<xsl:strip-space elements="table row entry tgroup thead listitem tip warning note caution important"/>
 
 <xsl:template match="/book">
   <xsl:choose>
@@ -558,10 +558,13 @@ ____
 <xsl:template match="tip|warning|note|caution|important">
 <xsl:call-template name="process-id"/>
 [<xsl:value-of select="upper-case(name())"/>]
-<xsl:apply-templates select="." mode="title"/>====
-<xsl:apply-templates select="node()[not(self::title)]"/>
-====
-<xsl:value-of select="util:carriage-returns(2)"/>
+<xsl:if test="title">
+  <xsl:text>.</xsl:text>
+  <xsl:apply-templates select="title"/>
+  <xsl:value-of select="util:carriage-returns(1)"/>
+</xsl:if>====
+<xsl:apply-templates select="node()[not(self::title)]"/>====
+<xsl:value-of select="util:carriage-returns(1)"/>
 </xsl:template>
 
 <xsl:template match="term"><xsl:apply-templates select="node()"/>:: </xsl:template>
@@ -665,7 +668,7 @@ ____
     </xsl:if>
   </xsl:template>
 
-<xsl:template match="ulink">link:$$<xsl:value-of select="@url" />$$[<xsl:apply-templates/>]</xsl:template>
+<xsl:template match="ulink"><xsl:value-of select="@url" />[<xsl:apply-templates/>]</xsl:template>
 
   <xsl:template match="email"><xsl:text>pass:[</xsl:text><xsl:element name="email"><xsl:value-of select="normalize-space(.)"/></xsl:element><xsl:text>]</xsl:text></xsl:template>
 
@@ -700,6 +703,8 @@ ____
 <xsl:if test="@spacing">
 [options="<xsl:value-of select="@spacing"/>"]
 </xsl:if>
+<xsl:text>
+</xsl:text>
 <xsl:for-each select="listitem">
 * <xsl:apply-templates/>
 </xsl:for-each>
@@ -710,6 +715,8 @@ ____
 <xsl:if test="@spacing">
 [options="<xsl:value-of select="@spacing"/>"]
 </xsl:if>
+<xsl:text>
+</xsl:text>
 <xsl:for-each select="listitem">
 . <xsl:apply-templates/>
 </xsl:for-each>
@@ -1228,6 +1235,7 @@ pass:[<xsl:copy-of select="."/>]
 <xsl:template match="section">
   <xsl:call-template name="process-id"/>
   <xsl:sequence select="string-join (('&#10;&#10;', for $i in (1 to count (ancestor::section) + 3) return '='),'')"/>
+  <xsl:text xml:space="preserve"> </xsl:text>
   <xsl:apply-templates select="title"/>
   <xsl:value-of select="util:carriage-returns(2)"/>
   <xsl:apply-templates select="*[not(self::title)]"/>
