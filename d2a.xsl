@@ -257,7 +257,7 @@
 <!-- END INDEX HANDLING -->
 
 <xsl:template match="para/text()">
-<xsl:value-of select="replace(replace(., '\n\s+', ' ', 'm'), 'C\+\+', '\$\$C++\$\$', 'm')"/>
+<xsl:value-of select="replace(replace(replace(., '^\s+', '', 'm'), '\n\s+', ' ', 'm'), 'C\+\+', '\$\$C++\$\$', 'm')"/>
 </xsl:template>
   
 <!-- Special handling for text inside code block that will be converted as Asciidoc, 
@@ -462,7 +462,7 @@
     <xsl:value-of select="util:carriage-returns(2)"/>
     <xsl:apply-templates select="node()[not(self::title)]"/>
   </xsl:template>
-  
+
 <xsl:template match="para|simpara">
   <xsl:choose>
     <xsl:when test="ancestor::callout"/>
